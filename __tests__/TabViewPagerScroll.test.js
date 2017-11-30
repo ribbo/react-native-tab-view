@@ -1,6 +1,6 @@
 /* @flow */
 
-import * as React from 'react';
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Animated, View } from 'react-native';
 import TabViewPagerScroll from '../src/TabViewPagerScroll';
@@ -24,9 +24,6 @@ it('renders only focused child until layout', () => {
       jumpToIndex={jest.fn()}
       getLastPosition={jest.fn()}
       subscribe={jest.fn()}
-      panX={new Animated.Value(0)}
-      offsetX={new Animated.Value(0)}
-      useNativeDriver={false}
     >
       <View />
       <View />
@@ -96,9 +93,6 @@ it('sets initial scroll position according to navigation state index', () => {
       jumpToIndex={jest.fn()}
       getLastPosition={jest.fn()}
       subscribe={jest.fn()}
-      panX={new Animated.Value(0)}
-      offsetX={new Animated.Value(0)}
-      useNativeDriver={false}
     >
       <View />
       <View />

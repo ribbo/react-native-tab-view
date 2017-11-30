@@ -1,9 +1,10 @@
 /* @flow */
 
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { View, ViewPagerAndroid, StyleSheet, I18nManager } from 'react-native';
-import { PagerRendererPropType } from './TabViewPropTypes';
-import type { PagerRendererProps, Route } from './TabViewTypeDefinitions';
+import { SceneRendererPropType } from './TabViewPropTypes';
+import type { SceneRendererProps, Route } from './TabViewTypeDefinitions';
 
 type PageScrollEvent = {
   nativeEvent: {
@@ -14,12 +15,21 @@ type PageScrollEvent = {
 
 type PageScrollState = 'dragging' | 'settling' | 'idle';
 
-type Props<T> = PagerRendererProps<T>;
+type Props<T> = SceneRendererProps<T> & {
+  animationEnabled?: boolean,
+  swipeEnabled?: boolean,
+  children?: React.Node,
+};
 
 export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
   Props<T>
 > {
-  static propTypes = PagerRendererPropType;
+  static propTypes = {
+    ...SceneRendererPropType,
+    animationEnabled: PropTypes.bool,
+    swipeEnabled: PropTypes.bool,
+    children: PropTypes.node,
+  };
 
   constructor(props: Props<T>) {
     super(props);
@@ -66,7 +76,7 @@ export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
   }
 
   componentWillUnmount() {
-    this._resetListener && this._resetListener.remove();
+    this._resetListener.remove();
   }
 
   _animationFrameCallback: ?() => void;
@@ -103,15 +113,9 @@ export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
   };
 
   _handlePageScroll = (e: PageScrollEvent) => {
-    this.props.offsetX.setValue(
-      e.nativeEvent.position *
-        this.props.layout.width *
-        (I18nManager.isRTL ? 1 : -1)
-    );
-    this.props.panX.setValue(
-      e.nativeEvent.offset *
-        this.props.layout.width *
-        (I18nManager.isRTL ? 1 : -1)
+    this.props.position.setValue(
+      this._getPageIndex(e.nativeEvent.position) +
+        e.nativeEvent.offset * (I18nManager.isRTL ? -1 : 1)
     );
   };
 

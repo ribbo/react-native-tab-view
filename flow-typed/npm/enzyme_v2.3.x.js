@@ -1,5 +1,5 @@
-// flow-typed signature: a18e8395a43c22fe55906624f2a7ddb9
-// flow-typed version: e351e417db/enzyme_v3.x.x/flow_>=v0.53.x
+// flow-typed signature: 905cf3353a9aaa3647dc2232b1cd864a
+// flow-typed version: 8742c67386/enzyme_v2.3.x/flow_>=v0.53.x
 
 import * as React from "react";
 
@@ -41,6 +41,7 @@ declare module "enzyme" {
     text(): string,
     html(): string,
     get(index: number): React.Node,
+    getNode(): React.Node,
     getNodes(): Array<React.Node>,
     getDOMNode(): HTMLElement | HTMLInputElement,
     at(index: number): this,
@@ -77,28 +78,24 @@ declare module "enzyme" {
     length: number
   }
 
-  declare class ReactWrapper extends Wrapper {
+  declare export class ReactWrapper extends Wrapper {
     constructor(nodes: NodeOrNodes, root: any, options?: ?Object): ReactWrapper,
     mount(): this,
     ref(refName: string): this,
     detach(): void
   }
 
-  declare class ShallowWrapper extends Wrapper {
-    constructor(
-      nodes: NodeOrNodes,
-      root: any,
-      options?: ?Object
-    ): ShallowWrapper,
+  declare export class ShallowWrapper extends Wrapper {
+    constructor(nodes: NodeOrNodes, root: any, options?: ?Object): ShallowWrapper;
     equals(node: React.Node): boolean,
     shallow(options?: { context?: Object }): ShallowWrapper
   }
 
-  declare function shallow(
+  declare export function shallow(
     node: React.Node,
-    options?: { context?: Object, disableLifecycleMethods?: boolean }
+    options?: { context?: Object }
   ): ShallowWrapper;
-  declare function mount(
+  declare export function mount(
     node: React.Node,
     options?: {
       context?: Object,
@@ -106,20 +103,8 @@ declare module "enzyme" {
       childContextTypes?: Object
     }
   ): ReactWrapper;
-  declare function render(
+  declare export function render(
     node: React.Node,
     options?: { context?: Object }
   ): CheerioWrapper;
-
-  declare module.exports: {
-    configure(options: {
-      Adapter?: any,
-      disableLifecycleMethods?: boolean
-    }): void,
-    render: typeof render,
-    mount: typeof mount,
-    shallow: typeof shallow,
-    ShallowWrapper: typeof ShallowWrapper,
-    ReactWrapper: typeof ReactWrapper
-  };
 }

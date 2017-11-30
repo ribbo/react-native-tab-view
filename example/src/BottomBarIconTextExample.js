@@ -16,11 +16,11 @@ type Route = {
 
 type State = NavigationState<Route>;
 
-export default class BottomBarIconExample extends PureComponent<*, State> {
+export default class TopBarIconExample extends PureComponent<*, State> {
   static title = 'Bottom bar with indicator';
   static appbarElevation = 4;
 
-  state = {
+  state: State = {
     index: 0,
     routes: [
       { key: '1', title: 'First', icon: 'ios-speedometer' },

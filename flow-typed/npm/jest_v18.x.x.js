@@ -1,8 +1,8 @@
-// flow-typed signature: 3df9907bbe7831a5c2c03eb838f6b3c0
-// flow-typed version: 0fd239bfe0/jest_v21.x.x/flow_>=v0.39.x
+// flow-typed signature: e49570b0f5e396c7206dda452bd6f004
+// flow-typed version: 1590d813f4/jest_v18.x.x/flow_>=v0.33.x
 
-type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
-  (...args: TArguments): TReturn,
+type JestMockFn = {
+  (...args: Array<any>): any,
   /**
    * An object for introspecting mock calls
    */
@@ -12,49 +12,37 @@ type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
      * function. Each call is represented by an array of arguments that were
      * passed during the call.
      */
-    calls: Array<TArguments>,
+    calls: Array<Array<any>>,
     /**
      * An array that contains all the object instances that have been
      * instantiated from this mock function.
      */
-    instances: Array<TReturn>
+    instances: mixed,
   },
   /**
    * Resets all information stored in the mockFn.mock.calls and
    * mockFn.mock.instances arrays. Often this is useful when you want to clean
    * up a mock's usage data between two assertions.
    */
-  mockClear(): void,
+  mockClear(): Function,
   /**
    * Resets all information stored in the mock. This is useful when you want to
    * completely restore a mock back to its initial state.
    */
-  mockReset(): void,
-  /**
-   * Removes the mock and restores the initial implementation. This is useful
-   * when you want to mock functions in certain test cases and restore the
-   * original implementation in others. Beware that mockFn.mockRestore only
-   * works when mock was created with jest.spyOn. Thus you have to take care of
-   * restoration yourself when manually assigning jest.fn().
-   */
-  mockRestore(): void,
+  mockReset(): Function,
   /**
    * Accepts a function that should be used as the implementation of the mock.
    * The mock itself will still record all calls that go into and instances
    * that come from itself -- the only difference is that the implementation
    * will also be executed when the mock is called.
    */
-  mockImplementation(
-    fn: (...args: TArguments) => TReturn
-  ): JestMockFn<TArguments, TReturn>,
+  mockImplementation(fn: Function): JestMockFn,
   /**
    * Accepts a function that will be used as an implementation of the mock for
    * one call to the mocked function. Can be chained so that multiple function
    * calls produce different results.
    */
-  mockImplementationOnce(
-    fn: (...args: TArguments) => TReturn
-  ): JestMockFn<TArguments, TReturn>,
+  mockImplementationOnce(fn: Function): JestMockFn,
   /**
    * Just a simple sugar function for returning `this`
    */
@@ -62,19 +50,19 @@ type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
   /**
    * Deprecated: use jest.fn(() => value) instead
    */
-  mockReturnValue(value: TReturn): JestMockFn<TArguments, TReturn>,
+  mockReturnValue(value: any): JestMockFn,
   /**
    * Sugar for only returning a value once inside your mock
    */
-  mockReturnValueOnce(value: TReturn): JestMockFn<TArguments, TReturn>
-};
+  mockReturnValueOnce(value: any): JestMockFn,
+}
 
 type JestAsymmetricEqualityType = {
   /**
    * A custom Jasmine equality tester
    */
-  asymmetricMatch(value: mixed): boolean
-};
+  asymmetricMatch(value: mixed): boolean,
+}
 
 type JestCallsType = {
   allArgs(): mixed,
@@ -83,61 +71,25 @@ type JestCallsType = {
   count(): number,
   first(): mixed,
   mostRecent(): mixed,
-  reset(): void
-};
+  reset(): void,
+}
 
 type JestClockType = {
   install(): void,
   mockDate(date: Date): void,
-  tick(milliseconds?: number): void,
-  uninstall(): void
-};
+  tick(): void,
+  uninstall(): void,
+}
 
 type JestMatcherResult = {
-  message?: string | (() => string),
-  pass: boolean
-};
+  message?: string | ()=>string,
+  pass: boolean,
+}
 
 type JestMatcher = (actual: any, expected: any) => JestMatcherResult;
 
-type JestPromiseType = {
-  /**
-   * Use rejects to unwrap the reason of a rejected promise so any other
-   * matcher can be chained. If the promise is fulfilled the assertion fails.
-   */
-  rejects: JestExpectType,
-  /**
-   * Use resolves to unwrap the value of a fulfilled promise so any other
-   * matcher can be chained. If the promise is rejected the assertion fails.
-   */
-  resolves: JestExpectType
-};
-
-/**
- *  Plugin: jest-enzyme
- */
-type EnzymeMatchersType = {
-  toBeChecked(): void,
-  toBeDisabled(): void,
-  toBeEmpty(): void,
-  toBePresent(): void,
-  toContainReact(element: React$Element<any>): void,
-  toHaveClassName(className: string): void,
-  toHaveHTML(html: string): void,
-  toHaveProp(propKey: string, propValue?: any): void,
-  toHaveRef(refName: string): void,
-  toHaveState(stateKey: string, stateValue?: any): void,
-  toHaveStyle(styleKey: string, styleValue?: any): void,
-  toHaveTagName(tagName: string): void,
-  toHaveText(text: string): void,
-  toIncludeText(text: string): void,
-  toHaveValue(value: any): void,
-  toMatchElement(element: React$Element<any>): void,
-  toMatchSelector(selector: string): void
-};
-
 type JestExpectType = {
-  not: JestExpectType & EnzymeMatchersType,
+  not: JestExpectType,
   /**
    * If you have a mock function, you can use .lastCalledWith to test what
    * arguments it was last called with.
@@ -238,11 +190,6 @@ type JestExpectType = {
    */
   toHaveBeenCalledWith(...args: Array<any>): void,
   /**
-   * Use .toHaveBeenLastCalledWith to ensure that a mock function was last called
-   * with specific arguments.
-   */
-  toHaveBeenLastCalledWith(...args: Array<any>): void,
-  /**
    * Check that an object has a .length property and it is set to a certain
    * numeric value.
    */
@@ -252,9 +199,9 @@ type JestExpectType = {
    */
   toHaveProperty(propPath: string, value?: any): void,
   /**
-   * Use .toMatch to check that a string matches a regular expression or string.
+   * Use .toMatch to check that a string matches a regular expression.
    */
-  toMatch(regexpOrString: RegExp | string): void,
+  toMatch(regexp: RegExp): void,
   /**
    * Use .toMatchObject to check that a javascript object matches a subset of the properties of an object.
    */
@@ -265,20 +212,20 @@ type JestExpectType = {
   toMatchSnapshot(name?: string): void,
   /**
    * Use .toThrow to test that a function throws when it is called.
-   * If you want to test that a specific error gets thrown, you can provide an
-   * argument to toThrow. The argument can be a string for the error message,
-   * a class for the error, or a regex that should match the error.
-   *
-   * Alias: .toThrowError
    */
-  toThrow(message?: string | Error | RegExp): void,
+  toThrow(message?: string | Error): void,
+  /**
+   * Use .toThrowError to test that a function throws a specific error when it
+   * is called. The argument can be a string for the error message, a class for
+   * the error, or a regex that should match the error.
+   */
   toThrowError(message?: string | Error | RegExp): void,
   /**
    * Use .toThrowErrorMatchingSnapshot to test that a function throws a error
    * matching the most recent snapshot when it is called.
    */
-  toThrowErrorMatchingSnapshot(): void
-};
+  toThrowErrorMatchingSnapshot(): void,
+}
 
 type JestObjectType = {
   /**
@@ -300,11 +247,6 @@ type JestObjectType = {
    * An un-hoisted version of enableAutomock
    */
   autoMockOn(): JestObjectType,
-  /**
-   * Clears the mock.calls and mock.instances properties of all mocks.
-   * Equivalent to calling .mockClear() on every mocked function.
-   */
-  clearAllMocks(): JestObjectType,
   /**
    * Resets the state of all mocks. Equivalent to calling .mockReset() on every
    * mocked function.
@@ -328,9 +270,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<*>, TReturn>(
-    implementation?: (...args: TArguments) => TReturn
-  ): JestMockFn<TArguments, TReturn>,
+  fn(implementation?: Function): JestMockFn,
   /**
    * Determines if the given function is a mocked function.
    */
@@ -349,21 +289,7 @@ type JestObjectType = {
    * The third argument can be used to create virtual mocks -- mocks of modules
    * that don't exist anywhere in the system.
    */
-  mock(
-    moduleName: string,
-    moduleFactory?: any,
-    options?: Object
-  ): JestObjectType,
-  /**
-   * Returns the actual module instead of a mock, bypassing all checks on
-   * whether the module should receive a mock implementation or not.
-   */
-  requireActual(moduleName: string): any,
-  /**
-   * Returns a mock module instead of the actual module, bypassing all checks
-   * on whether the module should be required normally or not.
-   */
-  requireMock(moduleName: string): any,
+  mock(moduleName: string, moduleFactory?: any): JestObjectType,
   /**
    * Resets the module registry - the cache of all required modules. This is
    * useful to isolate modules where local state might conflict between tests.
@@ -416,55 +342,22 @@ type JestObjectType = {
    * Instructs Jest to use the real versions of the standard timer functions.
    */
   useRealTimers(): JestObjectType,
-  /**
-   * Creates a mock function similar to jest.fn but also tracks calls to
-   * object[methodName].
-   */
-  spyOn(object: Object, methodName: string): JestMockFn<any, any>
-};
+}
 
 type JestSpyType = {
-  calls: JestCallsType
-};
+  calls: JestCallsType,
+}
 
 /** Runs this function after every test inside this context */
-declare function afterEach(
-  fn: (done: () => void) => ?Promise<mixed>,
-  timeout?: number
-): void;
+declare function afterEach(fn: Function): void;
 /** Runs this function before every test inside this context */
-declare function beforeEach(
-  fn: (done: () => void) => ?Promise<mixed>,
-  timeout?: number
-): void;
+declare function beforeEach(fn: Function): void;
 /** Runs this function after all tests have finished inside this context */
-declare function afterAll(
-  fn: (done: () => void) => ?Promise<mixed>,
-  timeout?: number
-): void;
+declare function afterAll(fn: Function): void;
 /** Runs this function before any tests have started inside this context */
-declare function beforeAll(
-  fn: (done: () => void) => ?Promise<mixed>,
-  timeout?: number
-): void;
-
+declare function beforeAll(fn: Function): void;
 /** A context for grouping tests together */
-declare var describe: {
-  /**
-   * Creates a block that groups together several related tests in one "test suite"
-   */
-  (name: string, fn: () => void): void,
-
-  /**
-   * Only run this describe block
-   */
-  only(name: string, fn: () => void): void,
-
-  /**
-   * Skip running this describe block
-   */
-  skip(name: string, fn: () => void): void
-};
+declare function describe(name: string, fn: Function): void;
 
 /** An individual test unit */
 declare var it: {
@@ -473,55 +366,31 @@ declare var it: {
    *
    * @param {string} Name of Test
    * @param {Function} Test
-   * @param {number} Timeout for the test, in milliseconds.
    */
-  (
-    name: string,
-    fn?: (done: () => void) => ?Promise<mixed>,
-    timeout?: number
-  ): void,
+  (name: string, fn?: Function): ?Promise<void>,
   /**
    * Only run this test
    *
    * @param {string} Name of Test
    * @param {Function} Test
-   * @param {number} Timeout for the test, in milliseconds.
    */
-  only(
-    name: string,
-    fn?: (done: () => void) => ?Promise<mixed>,
-    timeout?: number
-  ): void,
+  only(name: string, fn?: Function): ?Promise<void>,
   /**
    * Skip running this test
    *
    * @param {string} Name of Test
    * @param {Function} Test
-   * @param {number} Timeout for the test, in milliseconds.
    */
-  skip(
-    name: string,
-    fn?: (done: () => void) => ?Promise<mixed>,
-    timeout?: number
-  ): void,
+  skip(name: string, fn?: Function): ?Promise<void>,
   /**
    * Run the test concurrently
    *
    * @param {string} Name of Test
    * @param {Function} Test
-   * @param {number} Timeout for the test, in milliseconds.
    */
-  concurrent(
-    name: string,
-    fn?: (done: () => void) => ?Promise<mixed>,
-    timeout?: number
-  ): void
+  concurrent(name: string, fn?: Function): ?Promise<void>,
 };
-declare function fit(
-  name: string,
-  fn: (done: () => void) => ?Promise<mixed>,
-  timeout?: number
-): void;
+declare function fit(name: string, fn: Function): ?Promise<void>;
 /** An individual test unit */
 declare var test: typeof it;
 /** A disabled group of tests */
@@ -536,20 +405,15 @@ declare var xtest: typeof it;
 /** The expect function is used every time you want to test a value */
 declare var expect: {
   /** The object that you want to make assertions against */
-  (value: any): JestExpectType & JestPromiseType & EnzymeMatchersType,
+  (value: any): JestExpectType,
   /** Add additional Jasmine matchers to Jest's roster */
-  extend(matchers: { [name: string]: JestMatcher }): void,
-  /** Add a module that formats application-specific data structures. */
-  addSnapshotSerializer(serializer: (input: Object) => string): void,
+  extend(matchers: {[name:string]: JestMatcher}): void,
   assertions(expectedAssertions: number): void,
-  hasAssertions(): void,
   any(value: mixed): JestAsymmetricEqualityType,
   anything(): void,
   arrayContaining(value: Array<mixed>): void,
   objectContaining(value: Object): void,
-  /** Matches any received string that contains the exact expected string. */
-  stringContaining(value: string): void,
-  stringMatching(value: string | RegExp): void
+  stringMatching(value: string): void,
 };
 
 // TODO handle return type
@@ -557,7 +421,7 @@ declare var expect: {
 declare function spyOn(value: mixed, method: string): Object;
 
 /** Holds all functions related to manipulating test runner */
-declare var jest: JestObjectType;
+declare var jest: JestObjectType
 
 /**
  * The global Jamine object, this is generally not exposed as the public API,
@@ -570,10 +434,7 @@ declare var jasmine: {
   arrayContaining(value: Array<mixed>): void,
   clock(): JestClockType,
   createSpy(name: string): JestSpyType,
-  createSpyObj(
-    baseName: string,
-    methodNames: Array<string>
-  ): { [methodName: string]: JestSpyType },
+  createSpyObj(baseName: string, methodNames: Array<string>): {[methodName: string]: JestSpyType},
   objectContaining(value: Object): void,
-  stringMatching(value: string): void
-};
+  stringMatching(value: string): void,
+}

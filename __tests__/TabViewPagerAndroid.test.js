@@ -1,6 +1,6 @@
 /* @flow */
 
-import * as React from 'react';
+import React from 'react';
 import { shallow } from 'enzyme';
 import { Animated, View } from 'react-native';
 import TabViewPagerAndroid from '../src/TabViewPagerAndroid';
@@ -21,9 +21,6 @@ it('renders all children', () => {
       jumpToIndex={jest.fn()}
       getLastPosition={jest.fn()}
       subscribe={jest.fn()}
-      panX={new Animated.Value(0)}
-      offsetX={new Animated.Value(0)}
-      useNativeDriver={false}
     >
       <View />
       <View />
@@ -53,9 +50,6 @@ it('initial page is same as navigation state index', () => {
       jumpToIndex={jest.fn()}
       getLastPosition={jest.fn()}
       subscribe={jest.fn()}
-      panX={new Animated.Value(0)}
-      offsetX={new Animated.Value(0)}
-      useNativeDriver={false}
     >
       <View />
       <View />

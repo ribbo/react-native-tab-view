@@ -19,7 +19,6 @@ import BottomBarIconTextExample from './BottomBarIconTextExample';
 import NoAnimationExample from './NoAnimationExample';
 import ScrollViewsExample from './ScrollViewsExample';
 import CoverflowExample from './CoverflowExample';
-import NativeDriverExample from './NativeDriverExample';
 
 const PERSISTENCE_KEY = 'index_persistence';
 
@@ -30,7 +29,6 @@ const EXAMPLE_COMPONENTS = [
   NoAnimationExample,
   ScrollViewsExample,
   CoverflowExample,
-  NativeDriverExample,
 ];
 
 type State = {
@@ -47,9 +45,7 @@ export default class ExampleList extends PureComponent<{}, State> {
   };
 
   componentWillMount() {
-    if (process.env.NODE_ENV !== 'production') {
-      this._restoreNavigationState();
-    }
+    this._restoreNavigationState();
 
     [
       require('../assets/album-art-1.jpg'),
@@ -64,9 +60,7 @@ export default class ExampleList extends PureComponent<{}, State> {
   }
 
   _persistNavigationState = async (currentIndex: number) => {
-    if (process.env.NODE_ENV !== 'production') {
-      await AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(currentIndex));
-    }
+    await AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(currentIndex));
   };
 
   _restoreNavigationState = async () => {
@@ -143,7 +137,6 @@ export default class ExampleList extends PureComponent<{}, State> {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <Expo.KeepAwake />
         <View
           style={[
             styles.statusbar,

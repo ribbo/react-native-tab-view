@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, { PureComponent } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
 import SimplePage from './SimplePage';
 
@@ -14,16 +14,11 @@ type Route = {
 
 type State = NavigationState<Route>;
 
-const initialLayout = {
-  height: 0,
-  width: Dimensions.get('window').width,
-};
-
 export default class TopBarTextExample extends PureComponent<*, State> {
   static title = 'Scrollable top bar';
   static appbarElevation = 0;
 
-  state = {
+  state: State = {
     index: 1,
     routes: [
       { key: '1', title: 'First' },
@@ -95,7 +90,6 @@ export default class TopBarTextExample extends PureComponent<*, State> {
         renderScene={this._renderScene}
         renderHeader={this._renderHeader}
         onIndexChange={this._handleIndexChange}
-        initialLayout={initialLayout}
       />
     );
   }

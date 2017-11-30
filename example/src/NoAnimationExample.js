@@ -29,7 +29,7 @@ export default class TopBarIconExample extends PureComponent<*, State> {
   static tintColor = '#222';
   static appbarElevation = 4;
 
-  state = {
+  state: State = {
     index: 0,
     routes: [
       { key: '1', title: 'Featured', icon: 'ios-star' },

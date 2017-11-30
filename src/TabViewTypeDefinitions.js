@@ -1,8 +1,8 @@
 /* @flow */
 
-import { Animated } from 'react-native';
 import type { Node } from 'react';
 import type { StyleObj } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import { Animated } from 'react-native';
 
 export type Route<T: { key: string, testID?: string }> = T;
 
@@ -27,33 +27,13 @@ export type SceneRendererProps<T> = {
     measured: boolean,
   },
   navigationState: NavigationState<T>,
-  position: any,
+  position: Animated.Value,
   jumpToIndex: (index: number) => void,
   getLastPosition: () => number,
   subscribe: (
     event: SubscriptionName,
     callback: Function
   ) => { remove: Function },
-  useNativeDriver: boolean,
-};
-
-export type PagerRendererProps<T> = {
-  layout: Layout & {
-    measured: boolean,
-  },
-  navigationState: NavigationState<T>,
-  panX: Animated.Value,
-  offsetX: Animated.Value,
-  jumpToIndex: (index: number) => void,
-  getLastPosition: () => number,
-  subscribe: (
-    event: SubscriptionName,
-    callback: Function
-  ) => { remove: Function },
-  useNativeDriver: boolean,
-  animationEnabled?: boolean,
-  swipeEnabled?: boolean,
-  children: Node,
 };
 
 export type SubscriptionName = 'reset' | 'position';
@@ -77,6 +57,7 @@ export type PagerProps = {
   swipeEnabled?: boolean,
   swipeDistanceThreshold?: number,
   swipeVelocityThreshold?: number,
+  children?: Node,
 };
 
 export type Style = StyleObj;

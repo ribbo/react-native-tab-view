@@ -19,7 +19,7 @@ export default class TopBarIconExample extends PureComponent<*, State> {
   static title = 'Icon only top bar';
   static appbarElevation = 0;
 
-  state = {
+  state: State = {
     index: 0,
     routes: [
       { key: '1', icon: 'md-restaurant' },
