@@ -1,6 +1,6 @@
 /* @flow */
 
-import * as React from 'react';
+import React, { PureComponent, Children } from 'react';
 import PropTypes from 'prop-types';
 import {
   Animated,
@@ -44,7 +44,11 @@ type GestureState = {
   numberActiveTouches: number,
 };
 
-type GestureHandler = (event: GestureEvent, state: GestureState) => void;
+type DefaultProps = {
+  configureTransition: TransitionConfigurator,
+  swipeDistanceThreshold: number,
+  swipeVelocityThreshold: number,
+};
 
 type Props<T> = SceneRendererProps<T> & {
   configureTransition: TransitionConfigurator,
@@ -52,9 +56,7 @@ type Props<T> = SceneRendererProps<T> & {
   swipeEnabled?: boolean,
   swipeDistanceThreshold: number,
   swipeVelocityThreshold: number,
-  onSwipeStart?: GestureHandler,
-  onSwipeEnd?: GestureHandler,
-  children?: React.Node,
+  children?: React.Element<any>,
 };
 
 const DEAD_ZONE = 12;
@@ -65,9 +67,8 @@ const DefaultTransitionSpec = {
   friction: 35,
 };
 
-export default class TabViewPagerPan<T: Route<*>> extends React.Component<
-  Props<T>
-> {
+export default class TabViewPagerPan<T: Route<*>>
+  extends PureComponent<DefaultProps, Props<T>, void> {
   static propTypes = {
     ...SceneRendererPropType,
     configureTransition: PropTypes.func.isRequired,
@@ -75,8 +76,6 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
     swipeEnabled: PropTypes.bool,
     swipeDistanceThreshold: PropTypes.number.isRequired,
     swipeVelocityThreshold: PropTypes.number.isRequired,
-    onSwipeStart: PropTypes.func,
-    onSwipeEnd: PropTypes.func,
     children: PropTypes.node,
   };
 
@@ -113,7 +112,7 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
   }
 
   componentWillUnmount() {
-    this._resetListener && this._resetListener.remove();
+    this._resetListener.remove();
   }
 
   _panResponder: Object;
@@ -144,10 +143,9 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
   };
 
   _getNextIndex = (evt: GestureEvent, gestureState: GestureState) => {
-    const currentIndex =
-      typeof this._pendingIndex === 'number'
-        ? this._pendingIndex
-        : this.props.navigationState.index;
+    const currentIndex = typeof this._pendingIndex === 'number'
+      ? this._pendingIndex
+      : this.props.navigationState.index;
 
     let swipeVelocityThreshold = this.props.swipeVelocityThreshold;
 
@@ -188,20 +186,16 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
     return canMove;
   };
 
-  _startGesture = (evt: GestureEvent, gestureState: GestureState) => {
-    if (typeof this.props.onSwipeStart === 'function') {
-      this.props.onSwipeStart(evt, gestureState);
-    }
+  _startGesture = () => {
     this._lastValue = this.props.getLastPosition();
     this.props.position.stopAnimation();
   };
 
   _respondToGesture = (evt: GestureEvent, gestureState: GestureState) => {
     const { layout: { width } } = this.props;
-    const currentPosition =
-      typeof this._lastValue === 'number'
-        ? this._lastValue
-        : this.props.navigationState.index;
+    const currentPosition = typeof this._lastValue === 'number'
+      ? this._lastValue
+      : this.props.navigationState.index;
     const nextPosition =
       currentPosition - gestureState.dx / width * (I18nManager.isRTL ? -1 : 1);
     if (this._isMoving === null) {
@@ -213,9 +207,6 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
   };
 
   _finishGesture = (evt: GestureEvent, gestureState: GestureState) => {
-    if (typeof this.props.onSwipeEnd === 'function') {
-      this.props.onSwipeEnd(evt, gestureState);
-    }
     const currentIndex = this.props.navigationState.index;
     const currentValue = this.props.getLastPosition();
     if (currentValue !== currentIndex) {
@@ -241,13 +232,13 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
 
     this._pendingIndex = toValue;
 
-    if (this.props.animationEnabled !== false) {
-      const transitionSpec = this.props.configureTransition(
-        currentTransitionProps,
-        nextTransitionProps
-      );
-      const { timing, ...transitionConfig } = transitionSpec;
+    const transitionSpec = this.props.configureTransition(
+      currentTransitionProps,
+      nextTransitionProps,
+    );
+    const { timing, ...transitionConfig } = transitionSpec;
 
+    if (this.props.animationEnabled !== false) {
       timing(this.props.position, {
         ...transitionConfig,
         toValue,
@@ -258,9 +249,16 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
         }
       });
     } else {
-      this.props.position.setValue(toValue);
-      this.props.jumpToIndex(toValue);
-      this._pendingIndex = null;
+      Animated.timing(this.props.position, {
+        toValue,
+        delay: 10,
+        duration: 0,
+      }).start(({ finished }) => {
+        if (finished) {
+          this.props.jumpToIndex(toValue);
+          this._pendingIndex = null;
+        }
+      });
     }
   };
 
@@ -272,7 +270,7 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
     // Prepend '-1', so there are always at least 2 items in inputRange
     const inputRange = [-1, ...routes.map((x, i) => i)];
     const outputRange = inputRange.map(
-      i => width * i * (I18nManager.isRTL ? 1 : -1)
+      i => width * i * (I18nManager.isRTL ? 1 : -1),
     );
 
     const translateX = position.interpolate({
@@ -290,7 +288,7 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
         ]}
         {...this._panResponder.panHandlers}
       >
-        {React.Children.map(children, (child, i) => (
+        {Children.map(children, (child, i) => (
           <View
             key={navigationState.routes[i].key}
             testID={navigationState.routes[i].testID}
